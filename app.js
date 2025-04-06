@@ -19,7 +19,16 @@ app.use(express.json());
 
 app.use(cors({ origin: (origin, callback) => callback(null, true) }));
 
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Specify the directory to save uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Use a unique filename
+  }
+});
+
+const upload = multer({ storage: storage });
 
 const from = process.env.EMAIL_FROM;
 const to = process.env.EMAIL_TO;
@@ -38,9 +47,9 @@ const transport = nodeMailer.createTransport({
 
 
 
-app.post('/send-email', upload.single('attachment'), (req, res) => {
+app.post('/send-email', upload.array('attachment', 5), (req, res) => {
   const { nom, Numero, courriel, message } = req.body;
-  const file = req.file;
+  const files = req.files;
 
   const emailOptions = {
     from,
@@ -52,7 +61,7 @@ app.post('/send-email', upload.single('attachment'), (req, res) => {
       Courriel: ${courriel}
       Message: ${message}
     `,
-    attachments: file ? [{ filename: file.originalname, content: file.buffer }] : []
+    attachments: files ? files.map(file => ({ filename: file.originalname, path: file.path })) : []
   };
 
   transport.sendMail(emailOptions)
@@ -73,19 +82,3 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-// import express from 'express';
-// import cors from 'cors';
-
-// const app = express();
-// const port = process.env.PORT || 5000;
-
-// app.use(express.json());
-// app.use(cors({ origin: (origin, callback) => callback(null, true) }));
-
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
-
-// app.listen(port, () => {
-//   console.log(`Server running at http://localhost:${port}`);
-// });
