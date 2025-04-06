@@ -3,6 +3,8 @@ import express from 'express';
 import nodeMailer from 'nodemailer';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 dotenv.config({ path: './auth.env' });
 
 
@@ -17,11 +19,16 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use(cors({ origin: '*', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type'] }));
+app.use(cors({ origin: '*', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type', 'multipart/form-data'] }));
+
+const uploadDir = 'uploads';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Specify the directory to save uploaded files
+    cb(null, uploadDir); // Specify the directory to save uploaded files
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); // Use a unique filename
