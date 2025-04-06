@@ -68,7 +68,7 @@ app.post('/send-email', upload.array('attachment', 5), (req, res) => {
       Courriel: ${courriel}
       Message: ${message}
     `,
-    attachment: files ? files.map(file => ({ filename: file.originalname, path: file.path })) : []
+    attachments: files ? files.map(file => ({ filename: file.originalname, path: file.path })) : []
   };
 
   transport.sendMail(emailOptions)
