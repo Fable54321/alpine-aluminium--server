@@ -2,13 +2,22 @@ import multer from 'multer';
 import express from 'express';
 import nodeMailer from 'nodemailer';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+
+
+
+
+
+
 
 const app = express();
-const port = 3000;
+const { port = 5000 } = process.env;
+
 
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({ origin: (origin, callback) => callback(null, true) }));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -22,10 +31,12 @@ const transport = nodeMailer.createTransport({
     secure: false,
     secureConnection: 'STARTTLS',
     auth: {
-      user: 'AKIAVIOZF6PMOH7CPJFH',
-      pass: 'BK4fRiNL2cGXvZojm8hQOZKoLXA1K6uRZvYa0induAj2'
+      user: "AKIAVIOZF6PMOH7CPJFH",
+      pass: "BK4fRiNL2cGXvZojm8hQOZKoLXA1K6uRZvYa0induAj2"
     }
 });
+
+
 
 app.post('/send-email', upload.single('attachment'), (req, res) => {
   const { nom, Numero, courriel, message } = req.body;
@@ -51,10 +62,14 @@ app.post('/send-email', upload.single('attachment'), (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      res.status(500).send('Failed to send email');
+      res.status(500).send(`
+        <h1>Erreur</h1>
+        <p>Il y a eu une erreur lors de l'envoi du courriel. Veuillez essayer plus tard</p>
+      `);
     });
 });
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
