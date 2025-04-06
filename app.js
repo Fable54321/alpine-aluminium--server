@@ -17,7 +17,7 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use(cors({ origin: (origin, callback) => callback(null, true) }));
+app.use(cors({ origin: '*', methods: ['GET', 'POST'], allowedHeaders: ['Content-Type'] }));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
