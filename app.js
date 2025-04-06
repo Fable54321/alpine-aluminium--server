@@ -11,7 +11,7 @@ dotenv.config({ path: './auth.env' });
 
 
 const app = express();
-const { port = 5000 } = process.env;
+const port = process.env.PORT || 5000; 
 
 
 
@@ -21,8 +21,8 @@ app.use(cors({ origin: (origin, callback) => callback(null, true) }));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-const from = 'timothebissonnette@gmail.com';
-const to = 'timothebissonnette@gmail.com';
+const from = process.env.EMAIL_FROM;
+const to = process.env.EMAIL_TO;
 const subject = 'Envoyé depuis le serveur';
 
 const transport = nodeMailer.createTransport({
