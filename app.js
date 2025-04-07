@@ -89,6 +89,10 @@ app.post('/send-email', upload.array('attachment', 5), (req, res) => {
     });
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
